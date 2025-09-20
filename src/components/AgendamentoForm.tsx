@@ -164,7 +164,7 @@ const AgendamentoForm = ({ onSubmit, agendamentoEdit, onCancel }: AgendamentoFor
                     {date ? format(date, "PPP", { locale: ptBR }) : "Selecione a data"}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 z-[200]" align="start" side="bottom" sideOffset={8}>
+                <PopoverContent className="w-auto p-0 z-[9999]" align="start" side="bottom" sideOffset={8}>
                   <Calendar
                     mode="single"
                     selected={date}
