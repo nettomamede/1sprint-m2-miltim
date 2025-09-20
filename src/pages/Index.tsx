@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AgendaHeader from "@/components/AgendaHeader";
 import AgendamentoForm from "@/components/AgendamentoForm";
 import AgendaCalendar from "@/components/AgendaCalendar";
@@ -20,7 +20,9 @@ interface Agendamento {
 const Index = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingAgendamento, setEditingAgendamento] = useState<Agendamento | null>(null);
-  const [agendamentos, setAgendamentos] = useState<Agendamento[]>([
+
+  // Dados iniciais padrão
+  const dadosIniciais: Agendamento[] = [
     {
       id: "1",
       paciente: "João Silva",
@@ -43,76 +45,49 @@ const Index = () => {
       observacoes: "",
       status: "agendado"
     }
-  ]);
+  ];
 
-  const handleNewAgendamento = () => {
-    setEditingAgendamento(null);
-    setShowForm(true);
-  };
-
-  const handleEditAgendamento = (agendamento: Agendamento) => {
-    setEditingAgendamento(agendamento);
-    setShowForm(true);
-  };
-
-  const handleRescheduleAgendamento = (agendamento: Agendamento) => {
-    setEditingAgendamento(agendamento);
-    setShowForm(true);
-  };
-
-  const handleSubmitAgendamento = (agendamentoData: Agendamento) => {
-    if (editingAgendamento) {
-      setAgendamentos(prev => 
-        prev.map(ag => ag.id === editingAgendamento.id ? agendamentoData : ag)
-      );
-    } else {
-      setAgendamentos(prev => [...prev, agendamentoData]);
+  // Função para carregar dados do localStorage
+  const carregarAgendamentos = (): Agendamento[] => {
+    try {
+      const dadosSalvos = localStorage.getItem('agendamentos-medicos');
+      if (dadosSalvos) {
+        const agendamentos = JSON.parse(dadosSalvos);
+        // Converter as datas de string para Date
+        return agendamentos.map((ag: any) => ({
+          ...ag,
+          data: new Date(ag.data)
+        }));
+      }
+      // Se não há dados salvos, usar dados iniciais e salvá-los
+      salvarAgendamentos(dadosIniciais);
+      return dadosIniciais;
+    } catch (error) {
+      console.error('Erro ao carregar agendamentos:', error);
+      return dadosIniciais;
     }
-    setShowForm(false);
-    setEditingAgendamento(null);
   };
 
-  const handleDeleteAgendamento = (id: string) => {
-    setAgendamentos(prev => prev.filter(ag => ag.id !== id));
+  // Função para salvar dados no localStorage
+  const salvarAgendamentos = (agendamentos: Agendamento[]) => {
+    try {
+      localStorage.setItem('agendamentos-medicos', JSON.stringify(agendamentos));
+    } catch (error) {
+      console.error('Erro ao salvar agendamentos:', error);
+    }
   };
 
-  const handleCancelForm = () => {
-    setShowForm(false);
-    setEditingAgendamento(null);
-  };
+  const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
 
-  const agendamentosHoje = agendamentos.filter(ag => isToday(ag.data) && ag.status === "agendado").length;
+  // Carregar dados do localStorage quando o componente montar
+  useEffect(() => {
+    const agendamentosCarregados = carregarAgendamentos();
+    setAgendamentos(agendamentosCarregados);
+  }, []);
 
-  return (
-    <div className="min-h-screen bg-background">
-      <AgendaHeader />
-      
-      <main className="container mx-auto px-6 py-6">
-        {showForm ? (
-          <AgendamentoForm
-            onSubmit={handleSubmitAgendamento}
-            agendamentoEdit={editingAgendamento}
-            onCancel={handleCancelForm}
-          />
-        ) : (
-          <>
-            <QuickActions
-              onNewAgendamento={handleNewAgendamento}
-              totalAgendamentos={agendamentos.filter(ag => ag.status === "agendado").length}
-              agendamentosHoje={agendamentosHoje}
-            />
-            
-            <AgendaCalendar
-              agendamentos={agendamentos}
-              onEdit={handleEditAgendamento}
-              onDelete={handleDeleteAgendamento}
-              onReschedule={handleRescheduleAgendamento}
-            />
-          </>
-        )}
-      </main>
-    </div>
-  );
-};
-
-export default Index;
+  // Salvar dados no localStorage sempre que agendamentos mudar
+  useEffect(() => {
+    if (agendamentos.length > 0) {
+      salvarAgendamentos(agendamentos);
+    }
+  }, [agendamentos]);
