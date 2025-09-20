@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import AgendaHeader from "@/components/AgendaHeader";
 import AgendamentoForm from "@/components/AgendamentoForm";
 import AgendaCalendar from "@/components/AgendaCalendar";
@@ -20,9 +20,7 @@ interface Agendamento {
 const Index = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingAgendamento, setEditingAgendamento] = useState<Agendamento | null>(null);
-
-  // Dados iniciais padrão
-  const dadosIniciais: Agendamento[] = [
+  const [agendamentos, setAgendamentos] = useState<Agendamento[]>([
     {
       id: "1",
       paciente: "João Silva",
@@ -45,49 +43,76 @@ const Index = () => {
       observacoes: "",
       status: "agendado"
     }
-  ];
+  ]);
 
-  // Função para carregar dados do localStorage
-  const carregarAgendamentos = (): Agendamento[] => {
-    try {
-      const dadosSalvos = localStorage.getItem('agendamentos-medicos');
-      if (dadosSalvos) {
-        const agendamentos = JSON.parse(dadosSalvos);
-        // Converter as datas de string para Date
-        return agendamentos.map((ag: any) => ({
-          ...ag,
-          data: new Date(ag.data)
-        }));
-      }
-      // Se não há dados salvos, usar dados iniciais e salvá-los
-      salvarAgendamentos(dadosIniciais);
-      return dadosIniciais;
-    } catch (error) {
-      console.error('Erro ao carregar agendamentos:', error);
-      return dadosIniciais;
-    }
+  const handleNewAgendamento = () => {
+    setEditingAgendamento(null);
+    setShowForm(true);
   };
 
-  // Função para salvar dados no localStorage
-  const salvarAgendamentos = (agendamentos: Agendamento[]) => {
-    try {
-      localStorage.setItem('agendamentos-medicos', JSON.stringify(agendamentos));
-    } catch (error) {
-      console.error('Erro ao salvar agendamentos:', error);
-    }
+  const handleEditAgendamento = (agendamento: Agendamento) => {
+    setEditingAgendamento(agendamento);
+    setShowForm(true);
   };
 
-  const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
+  const handleRescheduleAgendamento = (agendamento: Agendamento) => {
+    setEditingAgendamento(agendamento);
+    setShowForm(true);
+  };
 
-  // Carregar dados do localStorage quando o componente montar
-  useEffect(() => {
-    const agendamentosCarregados = carregarAgendamentos();
-    setAgendamentos(agendamentosCarregados);
-  }, []);
-
-  // Salvar dados no localStorage sempre que agendamentos mudar
-  useEffect(() => {
-    if (agendamentos.length > 0) {
-      salvarAgendamentos(agendamentos);
+  const handleSubmitAgendamento = (agendamentoData: Agendamento) => {
+    if (editingAgendamento) {
+      setAgendamentos(prev => 
+        prev.map(ag => ag.id === editingAgendamento.id ? agendamentoData : ag)
+      );
+    } else {
+      setAgendamentos(prev => [...prev, agendamentoData]);
     }
-  }, [agendamentos]);
+    setShowForm(false);
+    setEditingAgendamento(null);
+  };
+
+  const handleDeleteAgendamento = (id: string) => {
+    setAgendamentos(prev => prev.filter(ag => ag.id !== id));
+  };
+
+  const handleCancelForm = () => {
+    setShowForm(false);
+    setEditingAgendamento(null);
+  };
+
+  const agendamentosHoje = agendamentos.filter(ag => isToday(ag.data) && ag.status === "agendado").length;
+
+  return (
+    <div className="min-h-screen bg-background">
+      <AgendaHeader />
+      
+      <main className="container mx-auto px-6 py-6">
+        {showForm ? (
+          <AgendamentoForm
+            onSubmit={handleSubmitAgendamento}
+            agendamentoEdit={editingAgendamento}
+            onCancel={handleCancelForm}
+          />
+        ) : (
+          <>
+            <QuickActions
+              onNewAgendamento={handleNewAgendamento}
+              totalAgendamentos={agendamentos.filter(ag => ag.status === "agendado").length}
+              agendamentosHoje={agendamentosHoje}
+            />
+            
+            <AgendaCalendar
+              agendamentos={agendamentos}
+              onEdit={handleEditAgendamento}
+              onDelete={handleDeleteAgendamento}
+              onReschedule={handleRescheduleAgendamento}
+            />
+          </>
+        )}
+      </main>
+    </div>
+  );
+};
+
+export default Index;
