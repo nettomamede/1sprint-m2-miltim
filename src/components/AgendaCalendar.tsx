@@ -41,6 +41,20 @@ const AgendaCalendar = ({ agendamentos, onEdit, onDelete, onReschedule }: Agenda
   const [currentWeek, setCurrentWeek] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; agendamento?: Agendamento }>({ open: false });
 
+  // Lista dos médicos para converter ID em nome
+  const medicos = [
+    { id: "1", nome: "Dr. João Silva", especialidade: "Cardiologia" },
+    { id: "2", nome: "Dra. Ana Santos", especialidade: "Dermatologia" },
+    { id: "3", nome: "Dr. Carlos Lima", especialidade: "Ortopedia" },
+    { id: "4", nome: "Dra. Maria Costa", especialidade: "Pediatria" }
+  ];
+
+  // Função para obter nome do médico pelo ID
+  const getNomeMedico = (medicoId: string) => {
+    const medico = medicos.find(m => m.id === medicoId);
+    return medico ? medico.nome : medicoId; // Retorna o nome ou o ID caso não encontre
+  };
+
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(currentWeek, i));
 
   const getAgendamentosForDay = (date: Date) => {
@@ -167,7 +181,7 @@ const AgendaCalendar = ({ agendamentos, onEdit, onDelete, onReschedule }: Agenda
                         </div>
                         
                         <div className="text-muted-foreground truncate text-xs mb-1">
-                          <span className="font-medium">{agendamento.medico}</span>
+                          <span className="font-medium">{getNomeMedico(agendamento.medico)}</span>
                         </div>
                         
                         <div className="text-muted-foreground truncate text-xs bg-accent/50 rounded px-1 py-0.5">
