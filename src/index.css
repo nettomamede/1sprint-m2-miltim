@@ -121,6 +121,17 @@ All colors MUST be HSL.
     min-height: 100vh;
   }
   
+  /* Esconder qualquer calendário que apareça fora do popover */
+  .rdp:not([data-radix-popper-content] .rdp):not([role="dialog"] .rdp) {
+    display: none !important;
+  }
+  
+  /* Garantir que apenas calendários dentro de popovers sejam visíveis */
+  [data-radix-popper-content] .rdp,
+  [role="dialog"] .rdp {
+    display: block !important;
+  }
+  
   /* Estilização personalizada para dropdowns e popovers */
   .dropdown-content,
   [data-radix-popper-content-wrapper] {
