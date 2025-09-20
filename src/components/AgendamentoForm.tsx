@@ -79,7 +79,7 @@ const AgendamentoForm = ({ onSubmit, agendamentoEdit, onCancel }: AgendamentoFor
       <CardHeader className="bg-gradient-to-r from-primary/5 to-blue-50 rounded-t-lg">
         <CardTitle className="flex items-center space-x-3 text-primary">
           <div className="bg-primary/10 p-2 rounded-lg">
-            
+            <Calendar className="h-6 w-6 text-primary" />
           </div>
           <div>
             <span className="text-xl">{agendamentoEdit ? "Editar Consulta" : "Nova Consulta"}</span>
