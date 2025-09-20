@@ -75,11 +75,11 @@ const AgendamentoForm = ({ onSubmit, agendamentoEdit, onCancel }: AgendamentoFor
   const medicoSelecionado = medicos.find(m => m.id === formData.medico);
 
   return (
-    <Card className="w-full max-w-3xl mx-auto medical-card relative z-10">
+    <Card className="w-full max-w-3xl mx-auto medical-card">
       <CardHeader className="bg-gradient-to-r from-primary/5 to-blue-50 rounded-t-lg">
         <CardTitle className="flex items-center space-x-3 text-primary">
           <div className="bg-primary/10 p-2 rounded-lg">
-            <Calendar className="h-6 w-6 text-primary" />
+            
           </div>
           <div>
             <span className="text-xl">{agendamentoEdit ? "Editar Consulta" : "Nova Consulta"}</span>
@@ -90,7 +90,7 @@ const AgendamentoForm = ({ onSubmit, agendamentoEdit, onCancel }: AgendamentoFor
         </CardTitle>
       </CardHeader>
       <CardContent className="p-8">
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6 relative">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="paciente">Nome do Paciente *</Label>
@@ -100,7 +100,6 @@ const AgendamentoForm = ({ onSubmit, agendamentoEdit, onCancel }: AgendamentoFor
                 onChange={(e) => setFormData({...formData, paciente: e.target.value})}
                 placeholder="Digite o nome completo"
                 required
-                className="relative z-10"
               />
             </div>
 
@@ -111,7 +110,6 @@ const AgendamentoForm = ({ onSubmit, agendamentoEdit, onCancel }: AgendamentoFor
                 value={formData.telefone}
                 onChange={(e) => setFormData({...formData, telefone: e.target.value})}
                 placeholder="(11) 99999-9999"
-                className="relative z-10"
               />
             </div>
           </div>
@@ -127,7 +125,7 @@ const AgendamentoForm = ({ onSubmit, agendamentoEdit, onCancel }: AgendamentoFor
                   especialidade: medico?.especialidade || ""
                 });
               }}>
-                <SelectTrigger className="relative z-10">
+                <SelectTrigger>
                   <SelectValue placeholder="Selecione o médico" />
                 </SelectTrigger>
                 <SelectContent>
@@ -146,7 +144,6 @@ const AgendamentoForm = ({ onSubmit, agendamentoEdit, onCancel }: AgendamentoFor
                 value={medicoSelecionado?.especialidade || ""}
                 disabled
                 placeholder="Selecionado automaticamente"
-                className="relative z-10"
               />
             </div>
           </div>
@@ -159,7 +156,7 @@ const AgendamentoForm = ({ onSubmit, agendamentoEdit, onCancel }: AgendamentoFor
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal relative z-10",
+                      "w-full justify-start text-left font-normal",
                       !date && "text-muted-foreground"
                     )}
                   >
@@ -167,7 +164,7 @@ const AgendamentoForm = ({ onSubmit, agendamentoEdit, onCancel }: AgendamentoFor
                     {date ? format(date, "PPP", { locale: ptBR }) : "Selecione a data"}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start" side="bottom" sideOffset={8}>
+                <PopoverContent className="w-auto p-0 z-[200]" align="start" side="bottom" sideOffset={8}>
                   <Calendar
                     mode="single"
                     selected={date}
@@ -183,7 +180,7 @@ const AgendamentoForm = ({ onSubmit, agendamentoEdit, onCancel }: AgendamentoFor
             <div className="space-y-2">
               <Label>Horário *</Label>
               <Select value={formData.horario} onValueChange={(value) => setFormData({...formData, horario: value})}>
-                <SelectTrigger className="relative z-10">
+                <SelectTrigger>
                   <SelectValue placeholder="Selecione o horário" />
                 </SelectTrigger>
                 <SelectContent>
@@ -208,7 +205,6 @@ const AgendamentoForm = ({ onSubmit, agendamentoEdit, onCancel }: AgendamentoFor
               onChange={(e) => setFormData({...formData, observacoes: e.target.value})}
               placeholder="Observações adicionais sobre a consulta..."
               rows={3}
-              className="relative z-10"
             />
           </div>
 
