@@ -124,12 +124,28 @@ All colors MUST be HSL.
   /* Estilização personalizada para dropdowns e popovers */
   .dropdown-content,
   [data-radix-popper-content-wrapper] {
-    z-index: 200 !important;
+    z-index: 1000 !important;
   }
   
   /* Garantir que popovers fiquem acima de outros elementos */
   [data-radix-portal] {
-    z-index: 200 !important;
+    z-index: 1000 !important;
+  }
+  
+  /* Popover específico para calendário */
+  [data-radix-popper-content-wrapper]:has([role="dialog"]) {
+    z-index: 1100 !important;
+  }
+  
+  /* Popover do calendário especificamente */
+  [data-radix-popper-content-wrapper] > div:has(.rdp) {
+    z-index: 1100 !important;
+  }
+  
+  /* Garantir que formulários tenham z-index menor */
+  .medical-card {
+    z-index: 10;
+    position: relative;
   }
 }
 
@@ -138,6 +154,8 @@ All colors MUST be HSL.
     @apply bg-card shadow-card border border-border/50 rounded-lg;
     background: var(--gradient-card);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 10;
   }
   
   .medical-card:hover {
@@ -148,6 +166,8 @@ All colors MUST be HSL.
   .medical-header {
     background: var(--gradient-primary);
     @apply text-primary-foreground shadow-elevated;
+    position: relative;
+    z-index: 20;
   }
   
   .status-badge {
